@@ -1,8 +1,16 @@
 from django import forms
+from django.contrib.auth.forms import PasswordChangeForm
 
 from .models import Caso, Contacto, Correo, Documento, Sistema
 
 _INPUT = 'cc-login-input'
+
+
+class CambiarClaveForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = _INPUT
 
 
 class SistemaForm(forms.ModelForm):

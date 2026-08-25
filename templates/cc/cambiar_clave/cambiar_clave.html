@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Cambiar clave · Custome Care{% endblock %}
+
+{% block breadcrumb %}
+<a class="is-muted" href="{% url 'home' %}">Custome Care</a> / <span class="is-current">Cambiar clave</span>
+{% endblock %}
+
+{% block content %}
+<div class="cc-login-wrap">
+    <form class="cc-login-card" method="post">
+        {% csrf_token %}
+        <h1 class="cc-login-title">Cambiar clave</h1>
+        <p class="cc-login-sub">Actualiza la contraseña de tu usuario.</p>
+
+        {% if exito %}
+        <div class="cc-badge cc-login-error">Tu contraseña se actualizó correctamente.</div>
+        {% endif %}
+
+        {% for error in form.non_field_errors %}
+        <div class="cc-badge cc-login-error">{{ error }}</div>
+        {% endfor %}
+
+        <label class="cc-login-label" for="{{ form.old_password.id_for_label }}">Contraseña actual</label>
+        {{ form.old_password }}
+        {% for error in form.old_password.errors %}<div class="cc-badge cc-login-error">{{ error }}</div>{% endfor %}
+
+        <label class="cc-login-label" for="{{ form.new_password1.id_for_label }}">Nueva contraseña</label>
+        {{ form.new_password1 }}
+        {% for error in form.new_password1.errors %}<div class="cc-badge cc-login-error">{{ error }}</div>{% endfor %}
+
+        <label class="cc-login-label" for="{{ form.new_password2.id_for_label }}">Confirmar nueva contraseña</label>
+        {{ form.new_password2 }}
+        {% for error in form.new_password2.errors %}<div class="cc-badge cc-login-error">{{ error }}</div>{% endfor %}
+
+        <button class="cc-btn cc-btn-primary cc-login-submit" type="submit">Guardar</button>
+    </form>
+</div>
+{% endblock %}

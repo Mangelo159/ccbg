@@ -1,3 +1,22 @@
+function ccToggleUserMenu(event) {
+    if (event) event.stopPropagation();
+    var dropdown = document.getElementById('cc-user-dropdown');
+    if (!dropdown) return;
+    var abrir = !dropdown.classList.contains('is-open');
+    dropdown.classList.toggle('is-open', abrir);
+    var boton = dropdown.previousElementSibling;
+    if (boton) boton.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+}
+
+document.addEventListener('click', function (event) {
+    var dropdown = document.getElementById('cc-user-dropdown');
+    if (!dropdown || !dropdown.classList.contains('is-open')) return;
+    if (dropdown.contains(event.target)) return;
+    dropdown.classList.remove('is-open');
+    var boton = dropdown.previousElementSibling;
+    if (boton) boton.setAttribute('aria-expanded', 'false');
+});
+
 function ccOpenModal(type, data) {
     data = data || {};
     var dialog = document.getElementById('dialog-' + type);

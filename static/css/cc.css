@@ -187,6 +187,68 @@ a:hover { text-decoration: underline; }
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 11px;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cc-user-menu {
+  position: relative;
+}
+
+.cc-user-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: var(--cc-white);
+  border: 1px solid var(--cc-border);
+  border-radius: 10px;
+  box-shadow: var(--cc-shadow-lg);
+  padding: 6px;
+  z-index: 50;
+}
+
+.cc-user-dropdown.is-open {
+  display: block;
+}
+
+.cc-user-dropdown-name {
+  padding: 8px 10px 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--cc-text);
+}
+
+.cc-user-dropdown-sep {
+  height: 1px;
+  background: var(--cc-border-soft);
+  margin: 4px 0;
+}
+
+.cc-user-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--cc-text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.cc-user-dropdown-item:hover {
+  background: var(--cc-row);
+}
+
+.cc-user-dropdown-item-danger {
+  color: var(--cc-magenta);
 }
 
 /* ---------- Header ---------- */
@@ -199,6 +261,8 @@ a:hover { text-decoration: underline; }
 
 .cc-breadcrumb .is-current { color: var(--cc-navy); }
 .cc-breadcrumb .is-muted { color: var(--cc-text-3); }
+.cc-breadcrumb a.is-muted { text-decoration: none; }
+.cc-breadcrumb a.is-muted:hover { color: var(--cc-navy); }
 
 .cc-header-right {
   display: flex;
@@ -215,33 +279,6 @@ a:hover { text-decoration: underline; }
   width: 1px;
   height: 18px;
   background: var(--cc-border);
-}
-
-.cc-bell {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--cc-text-2);
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
-}
-
-.cc-bell:hover { background: var(--cc-row); }
-
-.cc-bell .cc-dot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--cc-magenta);
 }
 
 /* ---------- Home: hero ---------- */

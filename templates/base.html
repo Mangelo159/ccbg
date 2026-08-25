@@ -45,17 +45,18 @@
                 <div class="cc-header-right">
                     <span class="cc-header-datetime">{% now "d/m/Y — H:i" %}</span>
                     <span class="cc-header-sep"></span>
-                    <span class="cc-bell">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span class="cc-dot"></span>
-                    </span>
-                    <div class="cc-avatar">{{ request.user.username|first|upper }}</div>
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button class="cc-bell" type="submit" aria-label="Cerrar sesión" title="Cerrar sesión">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-                        </button>
-                    </form>
+                    <div class="cc-user-menu">
+                        <button type="button" class="cc-avatar" onclick="ccToggleUserMenu(event)" aria-haspopup="true" aria-expanded="false">{{ request.user.username|first|upper }}</button>
+                        <div class="cc-user-dropdown" id="cc-user-dropdown">
+                            <div class="cc-user-dropdown-name">{{ request.user.username }}</div>
+                            <a class="cc-user-dropdown-item" href="{% url 'cambiar_clave' %}">Cambiar clave</a>
+                            <div class="cc-user-dropdown-sep"></div>
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="cc-user-dropdown-item cc-user-dropdown-item-danger">Cerrar sesión</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </header>
 

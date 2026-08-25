@@ -1,8 +1,11 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+
+from ..forms import CambiarClaveForm
 
 
 @login_required
@@ -37,3 +40,19 @@ def login_view(request):
 def logout_view(request):
     auth_logout(request)
     return redirect('login')
+
+
+@login_required
+def cambiar_clave(request):
+    if request.method == 'POST':
+        form = CambiarClaveForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            return render(request, 'cc/cambiar_clave/cambiar_clave.html', {
+                'form': CambiarClaveForm(request.user),
+                'exito': True,
+            })
+    else:
+        form = CambiarClaveForm(request.user)
+    return render(request, 'cc/cambiar_clave/cambiar_clave.html', {'form': form})
