@@ -608,6 +608,10 @@ a:hover { text-decoration: underline; }
   margin-bottom: 30px;
 }
 
+.cc-section-back {
+  margin-bottom: 20px;
+}
+
 .cc-module-search {
   display: flex;
   align-items: center;
@@ -678,6 +682,61 @@ a:hover { text-decoration: underline; }
   display: inline;
   margin: 0;
 }
+
+.cc-recurso-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.cc-recurso-grid .cc-table-empty {
+  grid-column: 1 / -1;
+}
+
+.cc-recurso-card {
+  border: 1px solid var(--cc-border);
+  border-radius: 12px;
+  background: var(--cc-white);
+  padding: 16px 18px;
+  box-shadow: var(--cc-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cc-recurso-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cc-recurso-card-head h3 {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0;
+  color: var(--cc-text);
+}
+
+.cc-recurso-card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--cc-text-2);
+  margin: 0;
+}
+
+.cc-recurso-card-desc strong { color: var(--cc-text); }
+
+.cc-recurso-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+  margin-top: auto;
+  border-top: 1px solid var(--cc-border-soft);
+}
+
+.cc-recurso-card-actions form { display: inline; margin: 0; }
 
 .cc-contacto-grid {
   display: grid;

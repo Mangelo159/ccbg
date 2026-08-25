@@ -1,3 +1,5 @@
+import re
+
 from cloudinary_storage.storage import RawMediaCloudinaryStorage
 from django.db import models
 
@@ -28,6 +30,11 @@ class Sistema(models.Model):
     class Meta:
         verbose_name = 'Sistema'
         verbose_name_plural = 'Sistemas'
+
+    def save(self, *args, **kwargs):
+        if self.url and not re.match(r'^[a-zA-Z][a-zA-Z0-9+.-]*://', self.url):
+            self.url = 'https://' + self.url
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre

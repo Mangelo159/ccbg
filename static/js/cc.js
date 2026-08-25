@@ -49,50 +49,58 @@ function ccCloseModal(type) {
 }
 
 /**
- * Buscador local de un módulo (Empresa/Barrio/Claro): filtra en vivo las filas
- * de cada tabla `.cc-module-section .cc-table` según el texto acumulado en el
- * atributo `data-cc-buscar` de cada `<tr>`. Se autoinicializa si encuentra el
- * input #cc-modulo-buscador, sin necesitar script por plantilla.
+ * Buscador local de un módulo (Empresa/Barrio/Claro): filtra en vivo los
+ * elementos con `data-cc-buscar` dentro de cada contenedor de resultados
+ * (`.cc-module-section .cc-table tbody` para tablas, `.cc-recurso-grid` para
+ * cards) según el texto acumulado en ese atributo. Se autoinicializa si
+ * encuentra el input #cc-modulo-buscador, sin necesitar script por plantilla.
  */
 document.addEventListener('DOMContentLoaded', function () {
     var input = document.getElementById('cc-modulo-buscador');
     if (!input) return;
 
-    var tbodies = document.querySelectorAll('.cc-module-section .cc-table tbody');
+    var contenedores = document.querySelectorAll('.cc-module-section .cc-table tbody, .cc-module-section .cc-recurso-grid');
 
-    tbodies.forEach(function (tbody) {
-        var filas = tbody.querySelectorAll('tr[data-cc-buscar]');
-        if (filas.length === 0) return;
+    contenedores.forEach(function (contenedor) {
+        var items = contenedor.querySelectorAll('[data-cc-buscar]');
+        if (items.length === 0) return;
 
-        var tabla = tbody.closest('table');
-        var columnas = tabla ? tabla.querySelectorAll('thead th').length : 1;
-
-        var vacio = document.createElement('tr');
-        vacio.className = 'cc-table-search-empty';
+        var esTabla = contenedor.tagName === 'TBODY';
+        var vacio;
+        if (esTabla) {
+            var tabla = contenedor.closest('table');
+            var columnas = tabla ? tabla.querySelectorAll('thead th').length : 1;
+            vacio = document.createElement('tr');
+            var celda = document.createElement('td');
+            celda.colSpan = columnas;
+            celda.className = 'cc-table-empty';
+            celda.textContent = 'Sin resultados para tu búsqueda.';
+            vacio.appendChild(celda);
+        } else {
+            vacio = document.createElement('div');
+            vacio.className = 'cc-table-empty';
+            vacio.textContent = 'Sin resultados para tu búsqueda.';
+        }
+        vacio.classList.add('cc-table-search-empty');
         vacio.style.display = 'none';
-        var celda = document.createElement('td');
-        celda.colSpan = columnas;
-        celda.className = 'cc-table-empty';
-        celda.textContent = 'Sin resultados para tu búsqueda.';
-        vacio.appendChild(celda);
-        tbody.appendChild(vacio);
+        contenedor.appendChild(vacio);
     });
 
     input.addEventListener('input', function () {
         var termino = input.value.trim().toLowerCase();
 
-        tbodies.forEach(function (tbody) {
-            var filas = tbody.querySelectorAll('tr[data-cc-buscar]');
-            if (filas.length === 0) return;
+        contenedores.forEach(function (contenedor) {
+            var items = contenedor.querySelectorAll('[data-cc-buscar]');
+            if (items.length === 0) return;
 
             var visibles = 0;
-            filas.forEach(function (fila) {
-                var coincide = termino === '' || fila.getAttribute('data-cc-buscar').toLowerCase().indexOf(termino) !== -1;
-                fila.style.display = coincide ? '' : 'none';
+            items.forEach(function (item) {
+                var coincide = termino === '' || item.getAttribute('data-cc-buscar').toLowerCase().indexOf(termino) !== -1;
+                item.style.display = coincide ? '' : 'none';
                 if (coincide) visibles++;
             });
 
-            var vacio = tbody.querySelector('.cc-table-search-empty');
+            var vacio = contenedor.querySelector('.cc-table-search-empty');
             if (vacio) vacio.style.display = (termino !== '' && visibles === 0) ? '' : 'none';
         });
     });
