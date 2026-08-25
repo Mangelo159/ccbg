@@ -155,13 +155,12 @@ STORAGES = {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        # CompressedManifestStaticFilesStorage falla el build cuando el admin de
+        # Django referencia assets ausentes en este entorno (ej. widgets.css,
+        # sorting-icons.svg). Se usa solo compresion, sin manifest/hashing estricto.
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
-
-# Algunos assets del admin de Django referencian archivos que WhiteNoise no
-# resuelve en el manifest (ej. forms.css -> widgets.css). No debe romper el build.
-WHITENOISE_MANIFEST_STRICT = False
 
 # Archivos subidos por los usuarios (Documento.archivo, etc.) van a Cloudinary.
 # Credenciales: https://cloudinary.com/console
