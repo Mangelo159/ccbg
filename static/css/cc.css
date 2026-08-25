@@ -566,6 +566,103 @@ a:hover { text-decoration: underline; }
   .cc-grid-5 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ---------- Sub-módulos (cards de entrada dentro de un servicio) ---------- */
+
+.cc-submodulo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 1100px) {
+  .cc-submodulo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .cc-submodulo-grid { grid-template-columns: 1fr; }
+}
+
+.cc-submodulo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--cc-border);
+  border-radius: 16px;
+  background: var(--cc-white);
+  padding: 24px 22px;
+  box-shadow: var(--cc-shadow-sm);
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.cc-submodulo-card:hover,
+.cc-submodulo-card:hover * {
+  text-decoration: none;
+}
+
+.cc-submodulo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cc-shadow-lg);
+  border-color: var(--cc-border-soft);
+}
+
+.cc-submodulo-monogram {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--cc-row);
+  color: var(--cc-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 12.5px;
+  transition: background .15s ease, color .15s ease;
+}
+
+.cc-submodulo-card:hover .cc-submodulo-monogram {
+  background: var(--cc-navy);
+  color: var(--cc-white);
+}
+
+.cc-submodulo-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cc-submodulo-body h3 {
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+  color: var(--cc-text);
+}
+
+.cc-submodulo-body p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--cc-text-2);
+  margin: 0;
+}
+
+.cc-submodulo-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--cc-border-soft);
+  font-size: 11.5px;
+  color: var(--cc-text-3);
+}
+
+.cc-submodulo-foot .cc-link {
+  color: var(--cc-magenta);
+  font-weight: 600;
+}
+
 /* ---------- Módulo: KPIs, tablas y modales ---------- */
 
 .cc-kpi-grid {
@@ -606,10 +703,6 @@ a:hover { text-decoration: underline; }
 
 .cc-module-section {
   margin-bottom: 30px;
-}
-
-.cc-section-back {
-  margin-bottom: 20px;
 }
 
 .cc-module-search {
@@ -685,8 +778,8 @@ a:hover { text-decoration: underline; }
 
 .cc-recurso-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
 }
 
 .cc-recurso-grid .cc-table-empty {
@@ -695,13 +788,19 @@ a:hover { text-decoration: underline; }
 
 .cc-recurso-card {
   border: 1px solid var(--cc-border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--cc-white);
-  padding: 16px 18px;
+  padding: 20px 22px;
   box-shadow: var(--cc-shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+.cc-recurso-card:hover {
+  border-color: var(--cc-border-soft);
+  box-shadow: var(--cc-shadow-lg);
 }
 
 .cc-recurso-card-head {
@@ -713,14 +812,14 @@ a:hover { text-decoration: underline; }
 
 .cc-recurso-card-head h3 {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   margin: 0;
   color: var(--cc-text);
 }
 
 .cc-recurso-card-desc {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 12.5px;
+  line-height: 1.55;
   color: var(--cc-text-2);
   margin: 0;
 }
@@ -730,13 +829,46 @@ a:hover { text-decoration: underline; }
 .cc-recurso-card-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-top: 10px;
+  gap: 8px;
+  padding-top: 14px;
   margin-top: auto;
   border-top: 1px solid var(--cc-border-soft);
 }
 
 .cc-recurso-card-actions form { display: inline; margin: 0; }
+
+.cc-recurso-card .cc-action-edit,
+.cc-recurso-card .cc-action-muted,
+.cc-recurso-card .cc-action-delete {
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--cc-border);
+  background: var(--cc-white);
+  font-size: 11.5px;
+  align-self: flex-start;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.cc-recurso-card .cc-action-edit {
+  color: var(--cc-magenta);
+  border-color: rgba(210, 0, 110, .25);
+  background: rgba(210, 0, 110, .06);
+}
+
+.cc-recurso-card .cc-action-edit:hover {
+  background: rgba(210, 0, 110, .12);
+  border-color: rgba(210, 0, 110, .4);
+}
+
+.cc-recurso-card .cc-action-muted {
+  color: var(--cc-text-2);
+}
+
+.cc-recurso-card .cc-action-muted:hover,
+.cc-recurso-card .cc-action-delete:hover {
+  color: var(--cc-magenta);
+  border-color: rgba(210, 0, 110, .3);
+}
 
 .cc-contacto-grid {
   display: grid;

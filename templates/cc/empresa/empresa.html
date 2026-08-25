@@ -12,37 +12,41 @@
 <h1 class="cc-page-title">Banca Empresa</h1>
 
 {% if not seccion_activa %}
-<div class="cc-kpi-grid">
-    <a class="cc-card" href="?seccion=sistemas">
-        <span class="cc-monogram">SI</span>
-        <h3>Sistemas</h3>
-        <p>Accesos y sistemas internos de Banca Empresa.</p>
-        <div class="cc-card-foot"><span>{{ sistemas|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+<div class="cc-submodulo-grid">
+    <a class="cc-submodulo-card" href="?seccion=sistemas">
+        <span class="cc-submodulo-monogram">SI</span>
+        <div class="cc-submodulo-body">
+            <h3>Sistemas</h3>
+            <p>Accesos y sistemas internos de Banca Empresa.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ sistemas|length }} registrados</span><span class="cc-link">Entrar →</span></div>
     </a>
-    <a class="cc-card" href="?seccion=documentos">
-        <span class="cc-monogram">DO</span>
-        <h3>Documentos</h3>
-        <p>Archivos y documentación de referencia.</p>
-        <div class="cc-card-foot"><span>{{ documentos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    <a class="cc-submodulo-card" href="?seccion=documentos">
+        <span class="cc-submodulo-monogram">DO</span>
+        <div class="cc-submodulo-body">
+            <h3>Documentos</h3>
+            <p>Archivos y documentación de referencia.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ documentos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
     </a>
-    <a class="cc-card" href="?seccion=correos">
-        <span class="cc-monogram">CO</span>
-        <h3>Correos</h3>
-        <p>Plantillas de correo listas para usar.</p>
-        <div class="cc-card-foot"><span>{{ correos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    <a class="cc-submodulo-card" href="?seccion=correos">
+        <span class="cc-submodulo-monogram">CO</span>
+        <div class="cc-submodulo-body">
+            <h3>Correos</h3>
+            <p>Plantillas de correo listas para usar.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ correos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
     </a>
-    <a class="cc-card" href="?seccion=casos">
-        <span class="cc-monogram">CA</span>
-        <h3>Casos</h3>
-        <p>Plantillas de casos y gestiones frecuentes.</p>
-        <div class="cc-card-foot"><span>{{ casos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    <a class="cc-submodulo-card" href="?seccion=casos">
+        <span class="cc-submodulo-monogram">CA</span>
+        <div class="cc-submodulo-body">
+            <h3>Casos</h3>
+            <p>Plantillas de casos y gestiones frecuentes.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ casos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
     </a>
 </div>
 {% else %}
-<div class="cc-section-back">
-    <a href="{% url 'empresa' %}" class="cc-link">← Volver a Banca Empresa</a>
-</div>
-
 <div class="cc-module-search">
     <span class="cc-search-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
