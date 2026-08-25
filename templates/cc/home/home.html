@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Custome Care{% endblock %}
+
+{% block breadcrumb %}<span class="is-current">Inicio</span>{% endblock %}
+
+{% block content %}
+<section class="cc-hero">
+    <div class="cc-hero-eyebrow">Centro de información interna</div>
+    <h1>Encuentra en segundos la información</h1>
+    <div class="cc-search-wrap">
+        <form class="cc-search" method="get" action="" onsubmit="return false;" autocomplete="off">
+            <span class="cc-search-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </span>
+            <input type="text" id="cc-buscador-input" name="q" placeholder="Sistema, documento, correo, caso o contacto…">
+            <button class="cc-btn cc-btn-primary" type="submit">Buscar</button>
+        </form>
+        <div id="cc-buscador-resultados" class="cc-buscador-resultados"></div>
+    </div>
+</section>
+
+<section>
+    <div class="cc-section-head">
+    </div>
+    <div class="cc-grid-5">
+        <a class="cc-card {% if modulo_activo == 'empresa' %}is-active{% endif %}" href="{% url 'empresa' %}">
+            <span class="cc-monogram">BE</span>
+            <h3>Banca Empresa</h3>
+            <p>Información y gestión de clientes de banca empresarial.</p>
+            <div class="cc-card-foot"><span>—</span><span class="cc-link">Entrar →</span></div>
+        </a>
+        <a class="cc-card {% if modulo_activo == 'barrio' %}is-active{% endif %}" href="{% url 'barrio' %}">
+            <span class="cc-monogram">BB</span>
+            <h3>Banco del Barrio</h3>
+            <p>Consulta de puntos, agentes y operaciones del Banco del Barrio.</p>
+            <div class="cc-card-foot"><span>—</span><span class="cc-link">Entrar →</span></div>
+        </a>
+        <a class="cc-card {% if modulo_activo == 'claro' %}is-active{% endif %}" href="{% url 'claro' %}">
+            <span class="cc-monogram">CL</span>
+            <h3>Claro</h3>
+            <p>Convenios y servicios asociados al aliado Claro.</p>
+            <div class="cc-card-foot"><span>—</span><span class="cc-link">Entrar →</span></div>
+        </a>
+        <a class="cc-card {% if modulo_activo == 'contactos' %}is-active{% endif %}" href="{% url 'contactos' %}">
+            <span class="cc-monogram">CT</span>
+            <h3>Contactos</h3>
+            <p>Directorio interno de contactos y extensiones de soporte.</p>
+            <div class="cc-card-foot"><span>—</span><span class="cc-link">Entrar →</span></div>
+        </a>
+        <a class="cc-card {% if modulo_activo == 'kmdb' %}is-active{% endif %}" href="{% url 'kmdb' %}">
+            <span class="cc-monogram">KM</span>
+            <h3>KMD</h3>
+            <p>Base de conocimiento y documentación de procesos.</p>
+            <div class="cc-card-foot"><span>—</span><span class="cc-link">Entrar →</span></div>
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var BUSCAR_URL = "{% url 'buscar' %}";
+    var input = document.getElementById('cc-buscador-input');
+    var contenedor = document.getElementById('cc-buscador-resultados');
+    if (!input || !contenedor) return;
+
+    var temporizador = null;
+    var controlador = null;
+
+    function limpiar() {
+        contenedor.innerHTML = '';
+        contenedor.classList.remove('is-open');
+    }
+
+    function conResaltado(elemento, texto, termino) {
+        texto = texto || '';
+        var textoLower = texto.toLowerCase();
+        var terminoLower = termino.toLowerCase();
+        var i = 0;
+        var idx = textoLower.indexOf(terminoLower);
+
+        if (idx === -1) {
+            elemento.textContent = texto;
+            return;
+        }
+
+        while (idx !== -1) {
+            if (idx > i) elemento.appendChild(document.createTextNode(texto.slice(i, idx)));
+            var marca = document.createElement('mark');
+            marca.className = 'cc-buscador-match';
+            marca.textContent = texto.slice(idx, idx + termino.length);
+            elemento.appendChild(marca);
+            i = idx + termino.length;
+            idx = textoLower.indexOf(terminoLower, i);
+        }
+        if (i < texto.length) elemento.appendChild(document.createTextNode(texto.slice(i)));
+    }
+
+    function renderizar(resultados, termino) {
+        contenedor.innerHTML = '';
+
+        if (resultados.length === 0) {
+            var vacio = document.createElement('div');
+            vacio.className = 'cc-buscador-vacio';
+            vacio.textContent = 'Sin resultados para "' + termino + '".';
+            contenedor.appendChild(vacio);
+        } else {
+            resultados.forEach(function (r) {
+                var item = document.createElement('a');
+                item.className = 'cc-buscador-item';
+                item.href = r.url;
+
+                var tipo = document.createElement('span');
+                tipo.className = 'cc-buscador-tipo';
+                tipo.textContent = r.tipo;
+
+                var titulo = document.createElement('span');
+                titulo.className = 'cc-buscador-titulo';
+                conResaltado(titulo, r.titulo, termino);
+
+                var subtitulo = document.createElement('span');
+                subtitulo.className = 'cc-buscador-subtitulo';
+                conResaltado(subtitulo, r.subtitulo, termino);
+
+                item.appendChild(tipo);
+                item.appendChild(titulo);
+                item.appendChild(subtitulo);
+                contenedor.appendChild(item);
+            });
+        }
+
+        contenedor.classList.add('is-open');
+    }
+
+    input.addEventListener('input', function () {
+        var termino = input.value.trim();
+        clearTimeout(temporizador);
+
+        if (termino.length < 2) {
+            limpiar();
+            return;
+        }
+
+        temporizador = setTimeout(function () {
+            if (controlador) controlador.abort();
+            controlador = new AbortController();
+
+            fetch(BUSCAR_URL + '?q=' + encodeURIComponent(termino), { signal: controlador.signal })
+                .then(function (resp) { return resp.json(); })
+                .then(function (data) { renderizar(data.resultados, termino); })
+                .catch(function (err) { if (err.name !== 'AbortError') console.error(err); });
+        }, 250);
+    });
+
+    input.addEventListener('focus', function () {
+        if (contenedor.children.length > 0) contenedor.classList.add('is-open');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target !== input && !contenedor.contains(e.target)) {
+            contenedor.classList.remove('is-open');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Contactos · Custome Care{% endblock %}
+
+{% block breadcrumb %}
+<span class="is-muted">Custome Care</span> / <span class="is-current">Contactos</span>
+{% endblock %}
+
+{% block content %}
+<h1 class="cc-page-title">Contactos</h1>
+
+<section class="cc-module-section">
+    <div class="cc-section-head">
+        <h2>Contactos</h2>
+        <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('contacto', {newTitle:'Nuevo contacto', editTitle:'Editar contacto'})">+ Nuevo</button>
+    </div>
+    <div class="cc-contacto-grid">
+        {% for c in contactos %}
+        <div class="cc-contacto-card">
+            <div class="cc-contacto-card-head">
+                <h3>{{ c.titulo }}</h3>
+                {% if c.extension %}<span class="cc-badge">Extensión</span>{% endif %}
+            </div>
+            <p class="cc-contacto-card-desc">{{ c.descripcion|default:"—" }}</p>
+            <div class="cc-contacto-card-numero">{{ c.numero|default:"—" }}</div>
+            <div class="cc-contacto-card-actions cc-table-actions">
+                <button type="button" class="cc-action-edit" onclick="ccOpenModal('contacto', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', numero:'{{ c.numero|escapejs }}', extension:{{ c.extension|yesno:'true,false' }}, newTitle:'Nuevo contacto', editTitle:'Editar contacto'})">Editar</button>
+                <form method="post" action="{% url 'contactos' %}" onsubmit="return confirm('¿Eliminar este contacto?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <button type="submit" class="cc-action-delete">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="cc-table-empty">Sin contactos registrados.</div>
+        {% endfor %}
+    </div>
+</section>
+
+<dialog id="dialog-contacto" class="cc-modal">
+    <form method="post" action="{% url 'contactos' %}" class="cc-modal-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="guardar">
+        <input type="hidden" name="id" value="{{ contacto_id|default_if_none:'' }}">
+        <div class="cc-modal-head">
+            <h3 class="cc-modal-title">{% if contacto_id %}Editar contacto{% else %}Nuevo contacto{% endif %}</h3>
+            <button type="button" class="cc-modal-close" onclick="ccCloseModal('contacto')" aria-label="Cerrar">&times;</button>
+        </div>
+        <label class="cc-login-label">Título</label>
+        {{ contacto_form.titulo }}
+        {{ contacto_form.titulo.errors }}
+        <label class="cc-login-label">Descripción</label>
+        {{ contacto_form.descripcion }}
+        {{ contacto_form.descripcion.errors }}
+        <label class="cc-login-label">Número</label>
+        {{ contacto_form.numero }}
+        {{ contacto_form.numero.errors }}
+        <label class="cc-modal-checkbox">{{ contacto_form.extension }} Es una extensión interna</label>
+        <div class="cc-modal-actions">
+            <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccCloseModal('contacto')">Cancelar</button>
+            <button type="submit" class="cc-btn cc-btn-primary">Guardar</button>
+        </div>
+    </form>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+{% if open_modal %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dialog = document.getElementById('dialog-{{ open_modal }}');
+    if (dialog) dialog.showModal();
+});
+</script>
+{% endif %}
+{% endblock %}

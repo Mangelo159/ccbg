@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Custome Care{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/cc.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="cc-app">
+        <aside class="cc-sidebar">
+            <a class="cc-brand" href="{% url 'home' %}">CC</a>
+            <nav class="cc-nav">
+                <a class="cc-nav-item {% if modulo_activo == 'empresa' %}is-active{% endif %}" href="{% url 'empresa' %}">
+                    <span class="cc-monogram">BE</span>
+                    <span class="cc-nav-label">Empresa</span>
+                </a>
+                <a class="cc-nav-item {% if modulo_activo == 'barrio' %}is-active{% endif %}" href="{% url 'barrio' %}">
+                    <span class="cc-monogram">BB</span>
+                    <span class="cc-nav-label">Barrio</span>
+                </a>
+                <a class="cc-nav-item {% if modulo_activo == 'claro' %}is-active{% endif %}" href="{% url 'claro' %}">
+                    <span class="cc-monogram">CL</span>
+                    <span class="cc-nav-label">Claro</span>
+                </a>
+                <a class="cc-nav-item {% if modulo_activo == 'contactos' %}is-active{% endif %}" href="{% url 'contactos' %}">
+                    <span class="cc-monogram">CT</span>
+                    <span class="cc-nav-label">Contactos</span>
+                </a>
+                <a class="cc-nav-item {% if modulo_activo == 'kmdb' %}is-active{% endif %}" href="{% url 'kmdb' %}">
+                    <span class="cc-monogram">KM</span>
+                    <span class="cc-nav-label">KMDB</span>
+                </a>
+            </nav>
+        </aside>
+
+        <div class="cc-main">
+            <header class="cc-header">
+                <div class="cc-breadcrumb">
+                    {% block breadcrumb %}<span class="is-current">Custome Care</span>{% endblock %}
+                </div>
+                <div class="cc-header-right">
+                    <span class="cc-header-datetime">{% now "d/m/Y — H:i" %}</span>
+                    <span class="cc-header-sep"></span>
+                    <span class="cc-bell">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="cc-dot"></span>
+                    </span>
+                    <div class="cc-avatar">{{ request.user.username|first|upper }}</div>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="cc-bell" type="submit" aria-label="Cerrar sesión" title="Cerrar sesión">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <main class="cc-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <footer class="cc-footer">
+                <span>Custome Care · Uso interno del banco</span>
+                <span>v1.0</span>
+            </footer>
+        </div>
+    </div>
+    <script src="{% static 'js/cc.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
