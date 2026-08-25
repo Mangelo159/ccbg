@@ -159,6 +159,10 @@ STORAGES = {
     },
 }
 
+# Algunos assets del admin de Django referencian archivos que WhiteNoise no
+# resuelve en el manifest (ej. forms.css -> widgets.css). No debe romper el build.
+WHITENOISE_MANIFEST_STRICT = False
+
 # Archivos subidos por los usuarios (Documento.archivo, etc.) van a Cloudinary.
 # Credenciales: https://cloudinary.com/console
 CLOUDINARY_STORAGE = {
