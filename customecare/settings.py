@@ -155,11 +155,7 @@ STORAGES = {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
     'staticfiles': {
-        # Los backends de WhiteNoise que post-procesan (manifest y/o compresion)
-        # fallan el build en este entorno por archivos del admin de Django que
-        # desaparecen entre la copia y la compresion. WhiteNoiseMiddleware sirve
-        # los estaticos directo desde STATIC_ROOT sin necesitar ese post-proceso.
-        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
 
