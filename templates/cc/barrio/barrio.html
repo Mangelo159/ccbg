@@ -3,12 +3,50 @@
 {% block title %}Banco del Barrio · Custome Care{% endblock %}
 
 {% block breadcrumb %}
-<a class="is-muted" href="{% url 'home' %}">Custome Care</a> / <span class="is-current">Banco del Barrio</span>
+<a class="is-muted" href="{% url 'home' %}">Custome Care</a> /
+{% if seccion_activa %}<a class="is-muted" href="{% url 'barrio' %}">Banco del Barrio</a> / <span class="is-current">{% if seccion_activa == 'sistemas' %}Sistemas{% elif seccion_activa == 'documentos' %}Documentos{% elif seccion_activa == 'correos' %}Correos{% elif seccion_activa == 'casos' %}Casos{% endif %}</span>
+{% else %}<span class="is-current">Banco del Barrio</span>{% endif %}
 {% endblock %}
 
 {% block content %}
 <h1 class="cc-page-title">Banco del Barrio</h1>
 
+{% if not seccion_activa %}
+<div class="cc-submodulo-grid">
+    <a class="cc-submodulo-card" href="?seccion=sistemas">
+        <span class="cc-submodulo-monogram">SI</span>
+        <div class="cc-submodulo-body">
+            <h3>Sistemas</h3>
+            <p>Accesos y sistemas internos del Banco del Barrio.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ sistemas|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    </a>
+    <a class="cc-submodulo-card" href="?seccion=documentos">
+        <span class="cc-submodulo-monogram">DO</span>
+        <div class="cc-submodulo-body">
+            <h3>Documentos</h3>
+            <p>Archivos y documentación de referencia.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ documentos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    </a>
+    <a class="cc-submodulo-card" href="?seccion=correos">
+        <span class="cc-submodulo-monogram">CO</span>
+        <div class="cc-submodulo-body">
+            <h3>Correos</h3>
+            <p>Plantillas de correo listas para usar.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ correos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    </a>
+    <a class="cc-submodulo-card" href="?seccion=casos">
+        <span class="cc-submodulo-monogram">CA</span>
+        <div class="cc-submodulo-body">
+            <h3>Casos</h3>
+            <p>Plantillas de casos y gestiones frecuentes.</p>
+        </div>
+        <div class="cc-submodulo-foot"><span>{{ casos|length }} registrados</span><span class="cc-link">Entrar →</span></div>
+    </a>
+</div>
+{% else %}
 <div class="cc-module-search">
     <span class="cc-search-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -16,182 +54,130 @@
     <input type="text" id="cc-modulo-buscador" placeholder="Buscar sistema, documento, correo o caso…" autocomplete="off">
 </div>
 
-<div class="cc-kpi-grid">
-    <div class="cc-kpi">
-        <div class="cc-kpi-label">Sistemas</div>
-        <div class="cc-kpi-value">{{ sistemas|length }}</div>
-    </div>
-    <div class="cc-kpi">
-        <div class="cc-kpi-label">Documentos</div>
-        <div class="cc-kpi-value">{{ documentos|length }}</div>
-    </div>
-    <div class="cc-kpi">
-        <div class="cc-kpi-label">Correos</div>
-        <div class="cc-kpi-value">{{ correos|length }}</div>
-    </div>
-    <div class="cc-kpi">
-        <div class="cc-kpi-label">Casos</div>
-        <div class="cc-kpi-value">{{ casos|length }}</div>
-    </div>
-</div>
-
+{% if seccion_activa == 'sistemas' %}
 <section class="cc-module-section">
     <div class="cc-section-head">
         <h2>Sistemas</h2>
         <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('sistema', {newTitle:'Nuevo sistema', editTitle:'Editar sistema'})">+ Nuevo</button>
     </div>
-    <table class="cc-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acceso</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for s in sistemas %}
-            <tr data-cc-buscar="{{ s.nombre }} {{ s.descripcion }} {{ s.url }}">
-                <td>{{ s.nombre }}</td>
-                <td>{{ s.descripcion|default:"—" }}</td>
-                <td>
-                    {% if s.programa %}<span class="cc-badge">Programa</span>
-                    {% elif s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener" class="cc-link">{{ s.url }}</a>
-                    {% else %}—{% endif %}
-                </td>
-                <td class="cc-table-actions">
-                    <button type="button" class="cc-action-edit" onclick="ccOpenModal('sistema', {id:{{ s.id }}, nombre:'{{ s.nombre|escapejs }}', descripcion:'{{ s.descripcion|escapejs }}', url:'{{ s.url|escapejs }}', programa:{{ s.programa|yesno:'true,false' }}, newTitle:'Nuevo sistema', editTitle:'Editar sistema'})">Editar</button>
-                    <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este sistema?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="recurso" value="sistema">
-                        <input type="hidden" name="action" value="eliminar">
-                        <input type="hidden" name="id" value="{{ s.id }}">
-                        <button type="submit" class="cc-action-delete">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="cc-table-empty">Sin sistemas registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="cc-recurso-grid">
+        {% for s in sistemas %}
+        <div class="cc-recurso-card" data-cc-buscar="{{ s.nombre }} {{ s.descripcion }} {{ s.url }}">
+            <div class="cc-recurso-card-head">
+                <h3>{{ s.nombre }}</h3>
+                {% if s.programa %}<span class="cc-badge">Programa</span>{% endif %}
+            </div>
+            <p class="cc-recurso-card-desc">{{ s.descripcion|default:"—" }}</p>
+            {% if not s.programa and s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener" class="cc-link">{{ s.url }}</a>{% endif %}
+            <div class="cc-recurso-card-actions">
+                <button type="button" class="cc-action-edit" onclick="ccOpenModal('sistema', {id:{{ s.id }}, nombre:'{{ s.nombre|escapejs }}', descripcion:'{{ s.descripcion|escapejs }}', url:'{{ s.url|escapejs }}', programa:{{ s.programa|yesno:'true,false' }}, newTitle:'Nuevo sistema', editTitle:'Editar sistema'})">Editar</button>
+                <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este sistema?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="recurso" value="sistema">
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="id" value="{{ s.id }}">
+                    <button type="submit" class="cc-action-delete">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="cc-table-empty">Sin sistemas registrados.</div>
+        {% endfor %}
+    </div>
 </section>
-
+{% elif seccion_activa == 'documentos' %}
 <section class="cc-module-section">
     <div class="cc-section-head">
         <h2>Documentos</h2>
         <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('documento', {newTitle:'Nuevo documento', editTitle:'Editar documento'})">+ Nuevo</button>
     </div>
-    <table class="cc-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Archivo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for d in documentos %}
-            <tr data-cc-buscar="{{ d.nombre }} {{ d.descripcion }}">
-                <td>{{ d.nombre }}</td>
-                <td>{{ d.descripcion|default:"—" }}</td>
-                <td>
-                    {% if d.archivo %}<button type="button" class="cc-action-edit" onclick="ccOpenPreview({url:'{{ d.archivo.url|escapejs }}', nombre:'{{ d.nombre|escapejs }}'})">Vista previa</button>{% else %}—{% endif %}
-                </td>
-                <td class="cc-table-actions">
-                    <button type="button" class="cc-action-muted" onclick="ccOpenModal('documento', {id:{{ d.id }}, nombre:'{{ d.nombre|escapejs }}', descripcion:'{{ d.descripcion|escapejs }}', newTitle:'Nuevo documento', editTitle:'Editar documento'})">Editar</button>
-                    <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este documento?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="recurso" value="documento">
-                        <input type="hidden" name="action" value="eliminar">
-                        <input type="hidden" name="id" value="{{ d.id }}">
-                        <button type="submit" class="cc-action-delete">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="cc-table-empty">Sin documentos registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="cc-recurso-grid">
+        {% for d in documentos %}
+        <div class="cc-recurso-card" data-cc-buscar="{{ d.nombre }} {{ d.descripcion }}">
+            <div class="cc-recurso-card-head">
+                <h3>{{ d.nombre }}</h3>
+            </div>
+            <p class="cc-recurso-card-desc">{{ d.descripcion|default:"—" }}</p>
+            {% if d.archivo %}<button type="button" class="cc-action-edit" onclick="ccOpenPreview({url:'{{ d.archivo.url|escapejs }}', nombre:'{{ d.nombre|escapejs }}'})">Vista previa</button>{% endif %}
+            <div class="cc-recurso-card-actions">
+                <button type="button" class="cc-action-muted" onclick="ccOpenModal('documento', {id:{{ d.id }}, nombre:'{{ d.nombre|escapejs }}', descripcion:'{{ d.descripcion|escapejs }}', newTitle:'Nuevo documento', editTitle:'Editar documento'})">Editar</button>
+                <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este documento?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="recurso" value="documento">
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="id" value="{{ d.id }}">
+                    <button type="submit" class="cc-action-delete">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="cc-table-empty">Sin documentos registrados.</div>
+        {% endfor %}
+    </div>
 </section>
-
+{% elif seccion_activa == 'correos' %}
 <section class="cc-module-section">
     <div class="cc-section-head">
         <h2>Correos</h2>
         <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('correo', {newTitle:'Nuevo correo', editTitle:'Editar correo'})">+ Nuevo</button>
     </div>
-    <table class="cc-table">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Asunto</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in correos %}
-            <tr data-cc-buscar="{{ c.titulo }} {{ c.asunto }} {{ c.descripcion }}">
-                <td>{{ c.titulo }}</td>
-                <td>{{ c.asunto }}</td>
-                <td>{{ c.descripcion|default:"—"|truncatechars:80 }}</td>
-                <td class="cc-table-actions">
-                    <button type="button" class="cc-action-edit" onclick="ccOpenUsarModal('usar-correo', {title:'Usar: {{ c.titulo|escapejs }}', campos:{asunto:'{{ c.asunto|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}'}})">Usar</button>
-                    <button type="button" class="cc-action-muted" onclick="ccOpenModal('correo', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', asunto:'{{ c.asunto|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo correo', editTitle:'Editar correo'})">Editar</button>
-                    <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este correo?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="recurso" value="correo">
-                        <input type="hidden" name="action" value="eliminar">
-                        <input type="hidden" name="id" value="{{ c.id }}">
-                        <button type="submit" class="cc-action-delete">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="cc-table-empty">Sin correos registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="cc-recurso-grid">
+        {% for c in correos %}
+        <div class="cc-recurso-card" data-cc-buscar="{{ c.titulo }} {{ c.asunto }} {{ c.descripcion }}">
+            <div class="cc-recurso-card-head">
+                <h3>{{ c.titulo }}</h3>
+            </div>
+            <p class="cc-recurso-card-desc"><strong>Asunto:</strong> {{ c.asunto }}</p>
+            <p class="cc-recurso-card-desc">{{ c.descripcion|default:"—"|truncatechars:80 }}</p>
+            <div class="cc-recurso-card-actions">
+                <button type="button" class="cc-action-edit" onclick="ccOpenUsarModal('usar-correo', {title:'Usar: {{ c.titulo|escapejs }}', campos:{asunto:'{{ c.asunto|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}'}})">Usar</button>
+                <button type="button" class="cc-action-muted" onclick="ccOpenModal('correo', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', asunto:'{{ c.asunto|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo correo', editTitle:'Editar correo'})">Editar</button>
+                <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este correo?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="recurso" value="correo">
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <button type="submit" class="cc-action-delete">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="cc-table-empty">Sin correos registrados.</div>
+        {% endfor %}
+    </div>
 </section>
-
+{% elif seccion_activa == 'casos' %}
 <section class="cc-module-section">
     <div class="cc-section-head">
         <h2>Casos</h2>
         <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('caso', {newTitle:'Nuevo caso', editTitle:'Editar caso'})">+ Nuevo</button>
     </div>
-    <table class="cc-table">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in casos %}
-            <tr data-cc-buscar="{{ c.titulo }} {{ c.descripcion }}">
-                <td>{{ c.titulo }}</td>
-                <td>{{ c.descripcion|default:"—"|truncatechars:100 }}</td>
-                <td class="cc-table-actions">
-                    <button type="button" class="cc-action-edit" onclick="ccOpenUsarModal('usar-caso', {title:'Usar: {{ c.titulo|escapejs }}', campos:{descripcion:'{{ c.descripcion|escapejs }}'}})">Usar</button>
-                    <button type="button" class="cc-action-muted" onclick="ccOpenModal('caso', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo caso', editTitle:'Editar caso'})">Editar</button>
-                    <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este caso?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="recurso" value="caso">
-                        <input type="hidden" name="action" value="eliminar">
-                        <input type="hidden" name="id" value="{{ c.id }}">
-                        <button type="submit" class="cc-action-delete">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="3" class="cc-table-empty">Sin casos registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="cc-recurso-grid">
+        {% for c in casos %}
+        <div class="cc-recurso-card" data-cc-buscar="{{ c.titulo }} {{ c.descripcion }}">
+            <div class="cc-recurso-card-head">
+                <h3>{{ c.titulo }}</h3>
+            </div>
+            <p class="cc-recurso-card-desc">{{ c.descripcion|default:"—"|truncatechars:100 }}</p>
+            <div class="cc-recurso-card-actions">
+                <button type="button" class="cc-action-edit" onclick="ccOpenUsarModal('usar-caso', {title:'Usar: {{ c.titulo|escapejs }}', campos:{descripcion:'{{ c.descripcion|escapejs }}'}})">Usar</button>
+                <button type="button" class="cc-action-muted" onclick="ccOpenModal('caso', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo caso', editTitle:'Editar caso'})">Editar</button>
+                <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este caso?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="recurso" value="caso">
+                    <input type="hidden" name="action" value="eliminar">
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <button type="submit" class="cc-action-delete">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="cc-table-empty">Sin casos registrados.</div>
+        {% endfor %}
+    </div>
 </section>
+{% endif %}
+{% endif %}
 
 <dialog id="dialog-sistema" class="cc-modal">
     <form method="post" action="{% url 'barrio' %}" class="cc-modal-form">
