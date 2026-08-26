@@ -1,14 +1,112 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}KMD · Custome Care{% endblock %}
+{% block title %}KMDB · Custome Care{% endblock %}
 
 {% block breadcrumb %}
-<a class="is-muted" href="{% url 'home' %}">Custome Care</a> / <span class="is-current">KMD</span>
+<a class="is-muted" href="{% url 'home' %}">Custome Care</a> / <span class="is-current">KMDB</span>
 {% endblock %}
 
 {% block content %}
-<h1 class="cc-page-title">KMD</h1>
-<div class="cc-placeholder">
-    Vista de KMD en construcción.
+<div class="cc-kmdb-head">
+    <h1 class="cc-page-title">KMDB</h1>
+    {% if request.user.is_superuser %}
+    <button type="button" class="cc-icon-btn" title="Configuración del chatbot" aria-label="Configuración del chatbot" onclick="document.getElementById('dialog-config-kmdb').showModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+    {% endif %}
 </div>
+
+<div class="cc-kmdb-chat">
+    <div class="cc-kmdb-messages" id="cc-kmdb-messages">
+        <div class="cc-kmdb-msg cc-kmdb-msg-bot">
+            Hola, soy el asistente de KMDB. Pregúntame sobre sistemas, documentos, correos, casos, contactos o el contexto adicional registrados en Custome Care.
+        </div>
+    </div>
+    <form id="cc-kmdb-form" class="cc-kmdb-form" data-chat-url="{% url 'kmdb_chat' %}">
+        {% csrf_token %}
+        <textarea id="cc-kmdb-input" class="cc-kmdb-input" rows="1" placeholder="Escribe tu pregunta…" autocomplete="off"></textarea>
+        <button type="submit" class="cc-btn cc-btn-primary" id="cc-kmdb-enviar">Enviar</button>
+    </form>
+</div>
+
+{% if request.user.is_superuser %}
+<dialog id="dialog-config-kmdb" class="cc-modal cc-modal-config">
+    <div class="cc-modal-form">
+        <div class="cc-modal-head">
+            <h3 class="cc-modal-title">Configuración del chatbot</h3>
+            <button type="button" class="cc-modal-close" onclick="document.getElementById('dialog-config-kmdb').close()" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <section class="cc-module-section">
+            <div class="cc-section-head">
+                <h2>Contexto adicional</h2>
+                <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccOpenModal('contexto', {newTitle:'Nuevo contexto', editTitle:'Editar contexto'})">+ Nuevo</button>
+            </div>
+            <p class="cc-modal-hint">Texto libre que se suma a lo que ya sabe el chatbot (servicios, sistemas, documentos, correos, casos y contactos). Útil para pegar información que no encaja en esas secciones.</p>
+            <div class="cc-recurso-grid">
+                {% for c in contextos %}
+                <div class="cc-recurso-card">
+                    <div class="cc-recurso-card-head">
+                        <h3>{{ c.titulo }}</h3>
+                        {% if not c.activo %}<span class="cc-badge">Inactivo</span>{% endif %}
+                    </div>
+                    <p class="cc-recurso-card-desc">{{ c.contenido|truncatechars:140 }}</p>
+                    <div class="cc-recurso-card-actions">
+                        <button type="button" class="cc-action-muted" onclick="ccOpenModal('contexto', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', contenido:'{{ c.contenido|escapejs }}', activo:{{ c.activo|yesno:'true,false' }}, newTitle:'Nuevo contexto', editTitle:'Editar contexto'})">Editar</button>
+                        <form method="post" action="{% url 'kmdb' %}" onsubmit="return confirm('¿Eliminar este contexto?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="eliminar_contexto">
+                            <input type="hidden" name="contexto_id" value="{{ c.id }}">
+                            <button type="submit" class="cc-action-delete">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="cc-table-empty">Sin contexto adicional registrado.</div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="cc-modal-actions">
+            <button type="button" class="cc-btn cc-btn-tertiary" onclick="document.getElementById('dialog-config-kmdb').close()">Cerrar</button>
+        </div>
+    </div>
+</dialog>
+
+<dialog id="dialog-contexto" class="cc-modal">
+    <form method="post" action="{% url 'kmdb' %}" class="cc-modal-form">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="{% if contexto_id %}editar_contexto{% else %}crear_contexto{% endif %}">
+        <input type="hidden" name="contexto_id" value="{{ contexto_id|default_if_none:'' }}">
+        <div class="cc-modal-head">
+            <h3 class="cc-modal-title">{% if contexto_id %}Editar contexto{% else %}Nuevo contexto{% endif %}</h3>
+            <button type="button" class="cc-modal-close" onclick="ccCloseModal('contexto')" aria-label="Cerrar">&times;</button>
+        </div>
+        <label class="cc-login-label">Título</label>
+        {{ contexto_form.titulo }}
+        {{ contexto_form.titulo.errors }}
+        <label class="cc-login-label">Contenido</label>
+        {{ contexto_form.contenido }}
+        {{ contexto_form.contenido.errors }}
+        <label class="cc-modal-checkbox">{{ contexto_form.activo }} Incluir en el contexto del chatbot</label>
+        <div class="cc-modal-actions">
+            <button type="button" class="cc-btn cc-btn-tertiary" onclick="ccCloseModal('contexto')">Cancelar</button>
+            <button type="submit" class="cc-btn cc-btn-primary">Guardar</button>
+        </div>
+    </form>
+</dialog>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/kmdb.js' %}"></script>
+{% if open_modal %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dialog = document.getElementById('dialog-{{ open_modal }}');
+    if (dialog) dialog.showModal();
+});
+</script>
+{% endif %}
 {% endblock %}

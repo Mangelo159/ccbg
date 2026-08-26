@@ -73,9 +73,8 @@
                 <button type="button" class="cc-action-edit" onclick="ccOpenModal('sistema', {id:{{ s.id }}, nombre:'{{ s.nombre|escapejs }}', descripcion:'{{ s.descripcion|escapejs }}', url:'{{ s.url|escapejs }}', programa:{{ s.programa|yesno:'true,false' }}, newTitle:'Nuevo sistema', editTitle:'Editar sistema'})">Editar</button>
                 <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este sistema?');">
                     {% csrf_token %}
-                    <input type="hidden" name="recurso" value="sistema">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="{{ s.id }}">
+                    <input type="hidden" name="accion" value="eliminar_sistema">
+                    <input type="hidden" name="sistema_id" value="{{ s.id }}">
                     <button type="submit" class="cc-action-delete">Eliminar</button>
                 </form>
             </div>
@@ -103,9 +102,8 @@
                 <button type="button" class="cc-action-muted" onclick="ccOpenModal('documento', {id:{{ d.id }}, nombre:'{{ d.nombre|escapejs }}', descripcion:'{{ d.descripcion|escapejs }}', newTitle:'Nuevo documento', editTitle:'Editar documento'})">Editar</button>
                 <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este documento?');">
                     {% csrf_token %}
-                    <input type="hidden" name="recurso" value="documento">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="{{ d.id }}">
+                    <input type="hidden" name="accion" value="eliminar_documento">
+                    <input type="hidden" name="documento_id" value="{{ d.id }}">
                     <button type="submit" class="cc-action-delete">Eliminar</button>
                 </form>
             </div>
@@ -134,9 +132,8 @@
                 <button type="button" class="cc-action-muted" onclick="ccOpenModal('correo', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', asunto:'{{ c.asunto|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo correo', editTitle:'Editar correo'})">Editar</button>
                 <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este correo?');">
                     {% csrf_token %}
-                    <input type="hidden" name="recurso" value="correo">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <input type="hidden" name="accion" value="eliminar_correo">
+                    <input type="hidden" name="correo_id" value="{{ c.id }}">
                     <button type="submit" class="cc-action-delete">Eliminar</button>
                 </form>
             </div>
@@ -164,9 +161,8 @@
                 <button type="button" class="cc-action-muted" onclick="ccOpenModal('caso', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', newTitle:'Nuevo caso', editTitle:'Editar caso'})">Editar</button>
                 <form method="post" action="{% url 'barrio' %}" onsubmit="return confirm('¿Eliminar este caso?');">
                     {% csrf_token %}
-                    <input type="hidden" name="recurso" value="caso">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <input type="hidden" name="accion" value="eliminar_caso">
+                    <input type="hidden" name="caso_id" value="{{ c.id }}">
                     <button type="submit" class="cc-action-delete">Eliminar</button>
                 </form>
             </div>
@@ -182,9 +178,8 @@
 <dialog id="dialog-sistema" class="cc-modal">
     <form method="post" action="{% url 'barrio' %}" class="cc-modal-form">
         {% csrf_token %}
-        <input type="hidden" name="recurso" value="sistema">
-        <input type="hidden" name="action" value="guardar">
-        <input type="hidden" name="id" value="{{ sistema_id|default_if_none:'' }}">
+        <input type="hidden" name="accion" value="{% if sistema_id %}editar_sistema{% else %}crear_sistema{% endif %}">
+        <input type="hidden" name="sistema_id" value="{{ sistema_id|default_if_none:'' }}">
         <div class="cc-modal-head">
             <h3 class="cc-modal-title">{% if sistema_id %}Editar sistema{% else %}Nuevo sistema{% endif %}</h3>
             <button type="button" class="cc-modal-close" onclick="ccCloseModal('sistema')" aria-label="Cerrar">&times;</button>
@@ -209,9 +204,8 @@
 <dialog id="dialog-documento" class="cc-modal">
     <form method="post" action="{% url 'barrio' %}" class="cc-modal-form" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="hidden" name="recurso" value="documento">
-        <input type="hidden" name="action" value="guardar">
-        <input type="hidden" name="id" value="{{ documento_id|default_if_none:'' }}">
+        <input type="hidden" name="accion" value="{% if documento_id %}editar_documento{% else %}crear_documento{% endif %}">
+        <input type="hidden" name="documento_id" value="{{ documento_id|default_if_none:'' }}">
         <div class="cc-modal-head">
             <h3 class="cc-modal-title">{% if documento_id %}Editar documento{% else %}Nuevo documento{% endif %}</h3>
             <button type="button" class="cc-modal-close" onclick="ccCloseModal('documento')" aria-label="Cerrar">&times;</button>
@@ -236,9 +230,8 @@
 <dialog id="dialog-correo" class="cc-modal">
     <form method="post" action="{% url 'barrio' %}" class="cc-modal-form">
         {% csrf_token %}
-        <input type="hidden" name="recurso" value="correo">
-        <input type="hidden" name="action" value="guardar">
-        <input type="hidden" name="id" value="{{ correo_id|default_if_none:'' }}">
+        <input type="hidden" name="accion" value="{% if correo_id %}editar_correo{% else %}crear_correo{% endif %}">
+        <input type="hidden" name="correo_id" value="{{ correo_id|default_if_none:'' }}">
         <div class="cc-modal-head">
             <h3 class="cc-modal-title">{% if correo_id %}Editar correo{% else %}Nuevo correo{% endif %}</h3>
             <button type="button" class="cc-modal-close" onclick="ccCloseModal('correo')" aria-label="Cerrar">&times;</button>
@@ -263,9 +256,8 @@
 <dialog id="dialog-caso" class="cc-modal">
     <form method="post" action="{% url 'barrio' %}" class="cc-modal-form">
         {% csrf_token %}
-        <input type="hidden" name="recurso" value="caso">
-        <input type="hidden" name="action" value="guardar">
-        <input type="hidden" name="id" value="{{ caso_id|default_if_none:'' }}">
+        <input type="hidden" name="accion" value="{% if caso_id %}editar_caso{% else %}crear_caso{% endif %}">
+        <input type="hidden" name="caso_id" value="{{ caso_id|default_if_none:'' }}">
         <div class="cc-modal-head">
             <h3 class="cc-modal-title">{% if caso_id %}Editar caso{% else %}Nuevo caso{% endif %}</h3>
             <button type="button" class="cc-modal-close" onclick="ccCloseModal('caso')" aria-label="Cerrar">&times;</button>

@@ -21,28 +21,36 @@ def _contexto(**extra):
 
 @login_required
 def contactos(request):
-    if request.method != 'POST':
-        contexto_extra = {}
-        pk = request.GET.get('id')
-        if request.GET.get('abrir') == 'contacto' and pk:
-            instancia = get_object_or_404(Contacto, pk=pk)
-            contexto_extra['contacto_form'] = ContactoForm(instance=instancia)
-            contexto_extra['contacto_id'] = pk
-            contexto_extra['open_modal'] = 'contacto'
-        return render(request, _TEMPLATE, _contexto(**contexto_extra))
+    if request.method == 'POST':
+        accion = request.POST.get('accion', '')
 
-    action = request.POST.get('action', 'guardar')
-    pk = request.POST.get('id') or None
+        if accion == 'crear_contacto':
+            form = ContactoForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(_MODULO)
+            return render(request, _TEMPLATE, _contexto(contacto_form=form, open_modal='contacto'))
 
-    if action == 'eliminar':
-        get_object_or_404(Contacto, pk=pk).delete()
+        elif accion == 'editar_contacto':
+            instancia = get_object_or_404(Contacto, pk=request.POST.get('contacto_id'))
+            form = ContactoForm(request.POST, instance=instancia)
+            if form.is_valid():
+                form.save()
+                return redirect(_MODULO)
+            return render(request, _TEMPLATE, _contexto(
+                contacto_form=form, contacto_id=instancia.pk, open_modal='contacto'))
+
+        elif accion == 'eliminar_contacto':
+            get_object_or_404(Contacto, pk=request.POST.get('contacto_id')).delete()
+            return redirect(_MODULO)
+
         return redirect(_MODULO)
 
-    instance = get_object_or_404(Contacto, pk=pk) if pk else None
-    form = ContactoForm(request.POST, instance=instance)
-    if form.is_valid():
-        form.save()
-        return redirect(_MODULO)
-
-    context = _contexto(contacto_form=form, contacto_id=pk, open_modal='contacto')
-    return render(request, _TEMPLATE, context)
+    contexto_extra = {}
+    pk = request.GET.get('id')
+    if request.GET.get('abrir') == 'contacto' and pk:
+        instancia = get_object_or_404(Contacto, pk=pk)
+        contexto_extra['contacto_form'] = ContactoForm(instance=instancia)
+        contexto_extra['contacto_id'] = pk
+        contexto_extra['open_modal'] = 'contacto'
+    return render(request, _TEMPLATE, _contexto(**contexto_extra))

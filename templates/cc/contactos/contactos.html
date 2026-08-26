@@ -27,8 +27,8 @@
                 <button type="button" class="cc-action-edit" onclick="ccOpenModal('contacto', {id:{{ c.id }}, titulo:'{{ c.titulo|escapejs }}', descripcion:'{{ c.descripcion|escapejs }}', numero:'{{ c.numero|escapejs }}', extension:{{ c.extension|yesno:'true,false' }}, newTitle:'Nuevo contacto', editTitle:'Editar contacto'})">Editar</button>
                 <form method="post" action="{% url 'contactos' %}" onsubmit="return confirm('¿Eliminar este contacto?');">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <input type="hidden" name="accion" value="eliminar_contacto">
+                    <input type="hidden" name="contacto_id" value="{{ c.id }}">
                     <button type="submit" class="cc-action-delete">Eliminar</button>
                 </form>
             </div>
@@ -42,8 +42,8 @@
 <dialog id="dialog-contacto" class="cc-modal">
     <form method="post" action="{% url 'contactos' %}" class="cc-modal-form">
         {% csrf_token %}
-        <input type="hidden" name="action" value="guardar">
-        <input type="hidden" name="id" value="{{ contacto_id|default_if_none:'' }}">
+        <input type="hidden" name="accion" value="{% if contacto_id %}editar_contacto{% else %}crear_contacto{% endif %}">
+        <input type="hidden" name="contacto_id" value="{{ contacto_id|default_if_none:'' }}">
         <div class="cc-modal-head">
             <h3 class="cc-modal-title">{% if contacto_id %}Editar contacto{% else %}Nuevo contacto{% endif %}</h3>
             <button type="button" class="cc-modal-close" onclick="ccCloseModal('contacto')" aria-label="Cerrar">&times;</button>

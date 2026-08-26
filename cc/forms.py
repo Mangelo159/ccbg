@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm
 
-from .models import Caso, Contacto, Correo, Documento, Sistema
+from .models import Caso, Contacto, ContextoIA, Correo, Documento, Sistema
 
 _INPUT = 'cc-login-input'
 
@@ -58,6 +58,16 @@ class CasoForm(forms.ModelForm):
         widgets = {
             'titulo': forms.TextInput(attrs={'class': _INPUT}),
             'descripcion': forms.Textarea(attrs={'class': _INPUT, 'rows': 4}),
+        }
+
+
+class ContextoIAForm(forms.ModelForm):
+    class Meta:
+        model = ContextoIA
+        fields = ['titulo', 'contenido', 'activo']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': _INPUT}),
+            'contenido': forms.Textarea(attrs={'class': _INPUT, 'rows': 8}),
         }
 
 

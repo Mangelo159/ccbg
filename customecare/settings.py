@@ -167,6 +167,9 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
+# API de Anthropic (chatbot de KMDB) — https://console.anthropic.com/settings/keys
+ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

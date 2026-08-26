@@ -3,6 +3,8 @@ import re
 from cloudinary_storage.storage import RawMediaCloudinaryStorage
 from django.db import models
 
+from .services.extraccion_texto import extraer_texto
+
 
 class Servicio(models.Model):
     codigo = models.CharField(max_length=10, unique=True)
@@ -45,10 +47,16 @@ class Documento(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=255, blank=True)
     archivo = models.FileField(upload_to='documentos/', storage=RawMediaCloudinaryStorage())
+    contenido_texto = models.TextField(blank=True, editable=False, help_text='Texto extraído del archivo, usado como contexto del chatbot de KMDB.')
 
     class Meta:
         verbose_name = 'Documento'
         verbose_name_plural = 'Documentos'
+
+    def save(self, *args, **kwargs):
+        if self.archivo and not self.archivo._committed:
+            self.contenido_texto = extraer_texto(self.archivo.name, self.archivo.file)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
@@ -76,6 +84,21 @@ class Caso(models.Model):
     class Meta:
         verbose_name = 'Caso'
         verbose_name_plural = 'Casos'
+
+    def __str__(self):
+        return self.titulo
+
+
+class ContextoIA(models.Model):
+    titulo = models.CharField(max_length=100)
+    contenido = models.TextField(help_text='Texto libre que se suma al contexto del chatbot de KMDB.')
+    activo = models.BooleanField(default=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-creado']
+        verbose_name = 'Contexto para IA'
+        verbose_name_plural = 'Contextos para IA'
 
     def __str__(self):
         return self.titulo
